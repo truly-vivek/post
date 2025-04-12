@@ -53,6 +53,7 @@ export default function Home() {
     navigator.clipboard.writeText(caption);
     toast({
       title: "Caption copied to clipboard!",
+      description: "Caption has been successfully copied.",
     });
   };
 
