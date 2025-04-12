@@ -72,7 +72,7 @@ const prompt = ai.definePrompt({
         .describe('An array of generated captions for the image.'),
     }),
   },
-  prompt: `You are a social media expert. Generate a few relevant captions for the image based on the analysis below:
+  prompt: `You are a social media expert. Generate a few relevant captions for the image based on the analysis below.  The captions should be short, engaging, and appropriate for platforms like Instagram, Twitter, and Facebook. Include relevant hashtags to increase visibility, but don't overdo it. Prefer emojis to text when possible. Vary the captions in style - some should be funny, some thought-provoking, some inspirational. The project's name is Post Captions.
 
 Image Analysis: {{{photoAnalysis}}}
 
