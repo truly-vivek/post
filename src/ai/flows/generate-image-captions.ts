@@ -1,5 +1,3 @@
-// The directive tells the Next.js runtime that the code in this file
-// should only be executed on the server side.
 'use server';
 
 /**
@@ -37,7 +35,7 @@ export async function generateImageCaptions(
 
 const analyzeImageTool = ai.defineTool({
   name: 'analyzeImage',
-  description: 'Analyzes an image and returns a description of its contents.',
+  description: 'Analyzes an image and returns a description of its contents. Limits the description to avoid exceeding token limits.',
   inputSchema: z.object({
     photoUrl: z.string().describe('The URL of the image to analyze.'),
   }),
@@ -45,8 +43,10 @@ const analyzeImageTool = ai.defineTool({
 },
 async input => {
   // In a real implementation, this would call an image analysis service.
-  // For now, it just returns a placeholder.
-  return `This image features a ${input.photoUrl}`;
+  // For now, it just returns a placeholder.  We are limiting the size of the description to avoid
+  // token limits.
+  const description = `This image features a ${input.photoUrl}`;
+  return description.substring(0, 800); // Limit to 800 characters to stay within token limits
 });
 
 const prompt = ai.definePrompt({
