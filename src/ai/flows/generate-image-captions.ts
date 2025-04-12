@@ -45,8 +45,13 @@ async input => {
   // In a real implementation, this would call an image analysis service.
   // For now, it just returns a placeholder.  We are limiting the size of the description to avoid
   // token limits.
-  const description = `This image features a ${input.photoUrl}`;
-  return description.substring(0, 800); // Limit to 800 characters to stay within token limits
+  try {
+    const description = `This image features a ${input.photoUrl}`;
+    return description.substring(0, 500); // Limit to 500 characters to stay within token limits
+  } catch (error: any) {
+    console.error("Error analyzing image:", error);
+    throw new Error(`Failed to analyze image: ${error.message}`);
+  }
 });
 
 const prompt = ai.definePrompt({
@@ -81,19 +86,24 @@ const generateImageCaptionsFlow = ai.defineFlow<
     outputSchema: GenerateImageCaptionsOutputSchema,
   },
   async input => {
-    const photoAnalysis = await analyzeImageTool(input);
-    const {output} = await prompt({
-      photoAnalysis,
-    });
-    // Ensure the output.captions is an array of strings
-    if (!Array.isArray(output?.captions)) {
-      throw new Error(
-        'The AI model returned captions in an unexpected format.  Expected an array of strings.'
-      );
-    }
+    try {
+      const photoAnalysis = await analyzeImageTool(input);
+      const {output} = await prompt({
+        photoAnalysis,
+      });
+      // Ensure the output.captions is an array of strings
+      if (!Array.isArray(output?.captions)) {
+        throw new Error(
+          'The AI model returned captions in an unexpected format.  Expected an array of strings.'
+        );
+      }
 
-    return {
-      captions: output.captions,
-    };
+      return {
+        captions: output.captions,
+      };
+    } catch (error: any) {
+      console.error("Error generating image captions:", error);
+      throw new Error(`Failed to generate captions: ${error.message}`);
+    }
   }
 );
