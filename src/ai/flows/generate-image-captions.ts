@@ -35,7 +35,7 @@ export async function generateImageCaptions(
 
 const analyzeImageTool = ai.defineTool({
   name: 'analyzeImage',
-  description: 'Analyzes an image and returns a description of its contents. Limits the description to avoid exceeding token limits.',
+  description: 'Analyzes an image and returns a detailed description of its contents, focusing on key elements and overall scene. Limits the description to avoid exceeding token limits.',
   inputSchema: z.object({
     photoUrl: z.string().describe('The URL of the image to analyze.'),
   }),
@@ -60,25 +60,39 @@ async input => {
 
 const prompt = ai.definePrompt({
   name: 'generateImageCaptionsPrompt',
-  input: {
-    schema: z.object({
-      photoAnalysis: z.string().describe('The analysis of the image.'),
-    }),
-  },
-  output: {
-    schema: z.object({
-      captions: z
-        .array(z.string())
-        .describe('An array of generated captions for the image.'),
-    }),
-  },
-  prompt: `You are a social media expert. Generate a few relevant captions for the image based on the analysis below.  The captions should be short, engaging, and appropriate for platforms like Instagram, Twitter, and Facebook. Include relevant hashtags to increase visibility, but don't overdo it. Prefer emojis to text when possible. Vary the captions in style - some should be funny, some thought-provoking, some inspirational. The project's name is Post Captions.
+   input: {
+     schema: z.object({
+       photoAnalysis: z.string().describe('The analysis of the image.'),
+     }),
+   },
+   output: {
+     schema: z.object({
+       captions: z
+         .array(z.string())
+         .describe('An array of generated captions for the image.'),
+     }),
+   },
+   prompt: `You are a social media expert specializing in creating engaging captions.  Your goal is to generate captions that are highly relevant to the image, maximizing user engagement.
+ 
 
-Image Analysis: {{{photoAnalysis}}}
+ Here are some guidlines, in order:
+ 
 
-Captions:`, // Ensure the output is an array of strings.
-  tools: [analyzeImageTool],
-});
+ 1.  Be extremely descriptive. Focus on details within the image. Use active voice and vivid language.
+ 2.  Employ conversational language. The captions must read as though a human wrote them.
+ 3.  The captions should be short, engaging, and appropriate for platforms like Instagram, Twitter, and Facebook.
+ 4.  Include relevant hashtags to increase visibility, but don't overdo it.
+ 5.  Prefer emojis to text when possible.
+ 6.  Vary the captions in style - some should be funny, some thought-provoking, some inspirational.
+ 7.  Use the project's name when relevant, which is PostCaptions.
+ 
+
+ Image Analysis: {{{photoAnalysis}}}
+ 
+
+ Captions:`,
+   tools: [analyzeImageTool],
+ });
 
 const generateImageCaptionsFlow = ai.defineFlow<
   typeof GenerateImageCaptionsInputSchema,
@@ -105,9 +119,9 @@ const generateImageCaptionsFlow = ai.defineFlow<
       return {
         captions: output.captions,
       };
-    } catch (error: any) {
-      console.error("Error generating image captions:", error);
-      throw new Error(`Failed to generate captions: ${error.message}`);
-    }
-  }
-);
+     } catch (error: any) {
+       console.error("Error generating image captions:", error);
+       throw new Error(`Failed to generate captions: ${error.message}`);
+     }
+   }
+ );
