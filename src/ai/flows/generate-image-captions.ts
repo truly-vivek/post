@@ -46,8 +46,12 @@ async input => {
   // For now, it just returns a placeholder.  We are limiting the size of the description to avoid
   // token limits.
   try {
-    const description = `This image features a ${input.photoUrl}`;
-    return description.substring(0, 500); // Limit to 500 characters to stay within token limits
+    let description = `This image features a ${input.photoUrl}`;
+    description = description.substring(0, 500);
+    if (description.length > 500) {
+      description = description.substring(0, 500);
+    }
+    return description; // Limit to 500 characters to stay within token limits
   } catch (error: any) {
     console.error("Error analyzing image:", error);
     throw new Error(`Failed to analyze image: ${error.message}`);
